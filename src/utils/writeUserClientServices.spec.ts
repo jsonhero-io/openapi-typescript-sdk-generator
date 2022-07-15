@@ -1,18 +1,23 @@
-import type { Client } from '../client/interfaces/Client';
+import { EOL } from 'os';
+
+import type { Service } from '../client/interfaces/Service';
+import { HttpClient } from '../HttpClient';
+import { Indent } from '../Indent';
 import { writeFile } from './fileSystem';
 import type { Templates } from './registerHandlebarTemplates';
-import { writeClientIndex } from './writeClientIndex';
+import { writeUserClientServices } from './writeUserClientServices';
 
 jest.mock('./fileSystem');
 
-describe('writeClientIndex', () => {
+describe('writeUserClientServices', () => {
     it('should write to filesystem', async () => {
-        const client: Client = {
-            server: 'http://localhost:8080',
-            version: '1.0',
-            models: [],
-            services: [],
-        };
+        const services: Service[] = [
+            {
+                name: 'User',
+                operations: [],
+                imports: [],
+            },
+        ];
 
         const templates: Templates = {
             index: () => 'index',
@@ -35,8 +40,17 @@ describe('writeClientIndex', () => {
             },
         };
 
-        await writeClientIndex(client, templates, '/', true, true, true, true, true, 'Service');
+        await writeUserClientServices(
+            services,
+            templates,
+            '/',
+            HttpClient.FETCH,
+            false,
+            false,
+            Indent.SPACE_4,
+            'Service'
+        );
 
-        expect(writeFile).toBeCalledWith('/index.ts', 'index');
+        expect(writeFile).toBeCalledWith('/UserClientService.ts', `clientService${EOL}`);
     });
 });

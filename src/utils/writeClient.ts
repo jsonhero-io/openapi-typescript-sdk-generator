@@ -13,6 +13,7 @@ import { writeClientIndex } from './writeClientIndex';
 import { writeClientModels } from './writeClientModels';
 import { writeClientSchemas } from './writeClientSchemas';
 import { writeClientServices } from './writeClientServices';
+import { writeUserClientServices } from './writeUserClientServices';
 
 /**
  * Write our OpenAPI client, using the given templates at the given output
@@ -68,6 +69,17 @@ export const writeClient = async (
         await rmdir(outputPathServices);
         await mkdir(outputPathServices);
         await writeClientServices(
+            client.services,
+            templates,
+            outputPathServices,
+            httpClient,
+            useUnionTypes,
+            useOptions,
+            indent,
+            postfix,
+            clientName
+        );
+        await writeUserClientServices(
             client.services,
             templates,
             outputPathServices,
